@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'mptt',
     'colorfield',
     'solo',
+    'drf_spectacular',
     
     # Local apps
     'core',
@@ -69,12 +70,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kisa_shop.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+import dj_database_url
+
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, conn_health_checks=True)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -108,6 +117,23 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FormParser',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'KISA Shop API',
+    'DESCRIPTION': 'API для интернет-магазина женской одежды KISA',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'TAGS': [
+        {'name': 'catalog', 'description': 'Каталог товаров: дропы, продукты, цвета, размеры, остатки'},
+        {'name': 'about', 'description': 'О бренде: главная, принципы, история, команда'},
+        {'name': 'journal', 'description': 'Журнал/Новости: публикации, статьи'},
+        {'name': 'orders', 'description': 'Заказы: создание, просмотр, изменение статуса'},
+        {'name': 'footer', 'description': 'Футер: контакты, сотрудничество, поддержка, настройки цветов'},
     ],
 }
 

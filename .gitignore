@@ -62,3 +62,13 @@ logs/
 
 # Requirements
 requirements.txt.lock
+
+
+# Игнорируем все файлы миграций
+**/migrations/*.py
+
+# Но не игнорируем файл инициализации, чтобы папка считалась модулем
+!**/migrations/__init__.py
+
+
+
